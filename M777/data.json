@@ -1,0 +1,10 @@
+{
+  "codes": [
+    "CODE_LINE_1",
+    "CODE_LINE_2",
+    "CODE_LINE_3",
+    "CODE_LINE_4",
+    "CODE_LINE_5"
+  ],
+  "promo": "活动说明第一行\n活动说明第二行\n支持换行"
+}
