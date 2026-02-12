@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Codes</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 背景 -->
+  <div class="bg" aria-hidden="true"></div>
+
+  <!-- 内容区 -->
+  <main class="wrap">
+    <section class="panel">
+      <header class="panel__header">
+        <h1 class="panel__title">快速复制代码</h1>
+        <p class="panel__sub">点击右侧复制按钮，一键复制对应代码</p>
+      </header>
+
+      <section class="grid" id="codesGrid" aria-label="Codes grid">
+        <!-- 由 app.js 动态渲染 5 个 code 卡片 -->
+      </section>
+
+      <section class="promo" aria-label="Promotion">
+        <h2 class="promo__title">活动说明</h2>
+        <div class="promo__box" id="promoBox">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton short"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
