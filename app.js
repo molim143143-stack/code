@@ -82,13 +82,13 @@ function render(data){
     const btn = document.createElement("button");
     btn.className = "btn";
     btn.type = "button";
-    btn.textContent = "复制";
+    btn.textContent = "Copiar";
     btn.disabled = !codeVal;
 
     btn.addEventListener("click", async () => {
       try{
         await navigator.clipboard.writeText(codeVal);
-        showToast("已复制");
+        showToast("¡Copiado!");
       }catch(e){
         // 兼容部分 WebView/旧浏览器
         try{
@@ -101,9 +101,9 @@ function render(data){
           ta.select();
           document.execCommand("copy");
           document.body.removeChild(ta);
-          showToast("已复制");
+          showToast("¡Copiado!");
         }catch(_){
-          showToast("复制失败");
+          showToast("No se pudo copiar");
         }
       }
     });
@@ -151,3 +151,4 @@ boot();
 if (AUTO_REFRESH_MS > 0){
   setInterval(boot, AUTO_REFRESH_MS);
 }
+
