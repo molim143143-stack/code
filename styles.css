@@ -268,3 +268,54 @@ body{
   .row{ gap: 10px; }
   .btn{ padding: 8px 12px; }
 }
+
+/* ============================= */
+/* 特别奖励卡片 */
+/* ============================= */
+
+.specialWrap{
+  position: absolute;
+  left: 50%;
+  top: 32%; /* 在主卡片上方 */
+  transform: translate(-50%, -50%);
+  width: min(440px, 82vw);
+  padding: 14px 14px;
+  border-radius: 18px;
+
+  background: linear-gradient(135deg, rgba(255, 170, 0, 0.35), rgba(255, 210, 60, 0.25));
+  border: 1px solid rgba(255, 210, 60, 0.6);
+  box-shadow: 0 18px 45px rgba(255, 180, 0, 0.4);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  transition: all .4s ease;
+  z-index: 5;
+}
+
+.specialWrap.hidden{
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -60%);
+}
+
+.specialTitle{
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-align: center;
+  color: #fff3c4;
+  letter-spacing: 0.5px;
+}
+
+.specialRow{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+/* 当特别奖励出现时，主卡片向下移动 */
+.stage.special-active .codesWrap{
+  transform: translate(-50%, -10%);
+}
