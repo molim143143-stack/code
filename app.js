@@ -14,7 +14,7 @@ const DATA_URL = "data.json";
  * - 0   : 只在页面首次加载时拉取一次（默认）
  * - > 0 : 每隔 N 毫秒自动刷新（不需要手动刷新页面）
  */
-const AUTO_REFRESH_MS = 0; // 例如 8000 表示每 8 秒刷新一次
+const AUTO_REFRESH_MS = 5000; // 例如 8000 表示每 8 秒刷新一次
 
 function qs(id){ return document.getElementById(id); }
 
@@ -31,20 +31,15 @@ function safeText(v){
   if (v === null || v === undefined) return "";
   return String(v);
 }
-
 function normalizeData(obj){
   const out = {
     codes: ["","","","",""],
     promo: "",
-    special: {
-      enabled: false,
-      start: null,
-      end: null,
-      codes: []
-    }
+    special: []
   };
 
   if (obj && typeof obj === "object"){
+
     if (Array.isArray(obj.codes)){
       const c = obj.codes.slice(0, 5).map(safeText);
       while (c.length < 5) c.push("");
@@ -55,27 +50,37 @@ function normalizeData(obj){
       out.promo = obj.promo;
     }
 
-    if (obj.special && typeof obj.special === "object"){
-      out.special.enabled = !!obj.special.enabled;
-      out.special.start = obj.special.start || null;
-      out.special.end = obj.special.end || null;
-      if (Array.isArray(obj.special.codes)){
-        out.special.codes = obj.special.codes.map(safeText);
-      }
+    if (Array.isArray(obj.special)){
+      out.special = obj.special.map(s => ({
+        enabled: !!s.enabled,
+        start: s.start || null,
+        end: s.end || null,
+        codes: Array.isArray(s.codes) ? s.codes.map(safeText) : []
+      }));
     }
   }
 
   return out;
 }
-function isSpecialActive(special){
-  if (!special.enabled) return false;
-  if (!special.start || !special.end) return false;
+
+function getActiveSpecial(list){
+  if (!Array.isArray(list)) return null;
 
   const now = new Date();
-  const start = new Date(special.start);
-  const end = new Date(special.end);
 
-  return now >= start && now <= end;
+  for (const sp of list){
+    if (!sp.enabled) continue;
+    if (!sp.start || !sp.end) continue;
+
+    const start = new Date(sp.start);
+    const end = new Date(sp.end);
+
+    if (now >= start && now <= end){
+      return sp;
+    }
+  }
+
+  return null;
 }
 
 function renderSpecial(data){
@@ -89,7 +94,7 @@ function renderSpecial(data){
     stage.appendChild(wrap);
   }
 
-  const active = isSpecialActive(data.special);
+  const active = getActiveSpecial(data.special);
 
   if (!active){
     wrap.classList.add("hidden");
@@ -102,7 +107,7 @@ function renderSpecial(data){
 
   wrap.innerHTML = `<div class="specialTitle">🎁 特别奖励代码</div>`;
 
-  data.special.codes.forEach(code => {
+  active.codes.forEach(code => {
     if (!code) return;
 
     const row = document.createElement("div");
@@ -130,6 +135,7 @@ function renderSpecial(data){
     wrap.appendChild(row);
   });
 }
+
 
 function render(data){
   const list = qs("codesList");
@@ -235,5 +241,6 @@ if (AUTO_REFRESH_MS > 0){
   setInterval(boot, AUTO_REFRESH_MS);
 }
 
-const AUTO_REFRESH_MS = 5000; // 建议 5 秒刷新一次
+
+
 
