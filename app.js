@@ -1,183 +1,153 @@
-/* ========= 配置 ========= */
-const DATA_URL = "./data.json"; // ✅ 机器人只需要更新这个文件
-const FALLBACK = {
-  codes: [
-    { title: "代码 1", desc: "说明文字（可选）", value: "CODE_1_EXAMPLE" },
-    { title: "代码 2", desc: "说明文字（可选）", value: "CODE_2_EXAMPLE" },
-    { title: "代码 3", desc: "说明文字（可选）", value: "CODE_3_EXAMPLE" },
-    { title: "代码 4", desc: "说明文字（可选）", value: "CODE_4_EXAMPLE" },
-    { title: "代码 5", desc: "说明文字（可选）", value: "CODE_5_EXAMPLE" },
-  ],
-  promo: "这里是活动说明。\n支持换行。\n机器人更新 data.json 后网页自动显示最新内容。"
-};
+/**
+ * app.js
+ * data.json 结构（与 bot.py 写入一致）：
+ * {
+ *   "codes": ["...", "...", "...", "...", "..."],
+ *   "promo": "..."
+ * }
+ */
 
-/* ========= 工具 ========= */
-function $(id){ return document.getElementById(id); }
+const DATA_URL = "data.json";
 
-let toastTimer = null;
-function toast(msg){
-  const el = $("toast");
-  if (!el) return;
-  el.textContent = msg;
+/**
+ * ✅ 热更开关：
+ * - 0   : 只在页面首次加载时拉取一次（默认）
+ * - > 0 : 每隔 N 毫秒自动刷新（不需要手动刷新页面）
+ */
+const AUTO_REFRESH_MS = 0; // 例如 8000 表示每 8 秒刷新一次
+
+function qs(id){ return document.getElementById(id); }
+
+function showToast(text){
+  const el = qs("toast");
+  if(!el) return;
+  el.textContent = text;
   el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=> el.classList.remove("show"), 1300);
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove("show"), 1200);
 }
 
-async function copyText(text){
-  // 首选：Clipboard API
-  try{
-    await navigator.clipboard.writeText(text);
-    return true;
-  }catch(_){}
-
-  // 兜底：选区复制
-  try{
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.left = "-9999px";
-    ta.style.top = "-9999px";
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    const ok = document.execCommand("copy");
-    document.body.removeChild(ta);
-    return ok;
-  }catch(_){
-    return false;
-  }
+function safeText(v){
+  if (v === null || v === undefined) return "";
+  return String(v);
 }
 
-/* ========= 渲染 ========= */
-function normalizeData(data){
-  // 允许 data.json 只给 5 行 code（数组字符串），也允许给对象数组
-  // 目标：统一成 { codes:[{title,desc,value} x5], promo:string }
-  const out = { ...FALLBACK };
+function normalizeData(obj){
+  const out = { codes: ["","","","",""], promo: "" };
 
-  if (data && typeof data === "object") {
-    // promo
-    if (typeof data.promo === "string") out.promo = data.promo;
-
-    // codes
-    if (Array.isArray(data.codes)) {
-      const arr = data.codes.slice(0, 5);
-      const normalized = [];
-
-      for (let i = 0; i < 5; i++){
-        const item = arr[i];
-
-        if (typeof item === "string") {
-          normalized.push({
-            title: `代码 ${i+1}`,
-            desc: "点击复制按钮即可复制",
-            value: item
-          });
-        } else if (item && typeof item === "object") {
-          normalized.push({
-            title: (typeof item.title === "string" && item.title.trim()) ? item.title : `代码 ${i+1}`,
-            desc: (typeof item.desc === "string") ? item.desc : "点击复制按钮即可复制",
-            value: (typeof item.value === "string") ? item.value : ""
-          });
-        } else {
-          normalized.push({
-            title: `代码 ${i+1}`,
-            desc: "点击复制按钮即可复制",
-            value: ""
-          });
-        }
-      }
-      out.codes = normalized;
+  if (obj && typeof obj === "object"){
+    if (Array.isArray(obj.codes)){
+      const c = obj.codes.slice(0, 5).map(safeText);
+      while (c.length < 5) c.push("");
+      out.codes = c;
+    }
+    if (typeof obj.promo === "string"){
+      out.promo = obj.promo;
     }
   }
 
-  // 强制保证 5 个
-  if (!Array.isArray(out.codes)) out.codes = FALLBACK.codes;
-  if (out.codes.length !== 5){
-    const fixed = [];
-    for (let i=0;i<5;i++){
-      fixed.push(out.codes[i] || {
-        title: `代码 ${i+1}`,
-        desc: "点击复制按钮即可复制",
-        value: ""
-      });
-    }
-    out.codes = fixed;
-  }
-
-  if (typeof out.promo !== "string") out.promo = FALLBACK.promo;
   return out;
 }
 
 function render(data){
-  const codesGrid = $("codesGrid");
-  const promoBox = $("promoBox");
-  if (!codesGrid || !promoBox) return;
+  const list = qs("codesList");
+  const promoSection = qs("promoSection");
+  const promoText = qs("promoText");
+  if(!list) return;
 
   // codes
-  codesGrid.innerHTML = "";
-  data.codes.forEach((c, idx) => {
-    const card = document.createElement("article");
-    card.className = "card";
+  list.innerHTML = "";
+  const codes = data.codes || ["","","","",""];
+  for(let i=0;i<5;i++){
+    const codeVal = safeText(codes[i] ?? "");
+    const label = `Código recompensa${i+1}`;
 
-    const top = document.createElement("div");
-    top.className = "card__top";
+    const row = document.createElement("div");
+    row.className = "row";
 
     const left = document.createElement("div");
-    const h = document.createElement("h3");
-    h.className = "card__title";
-    h.textContent = c.title || `代码 ${idx+1}`;
+    left.className = "left";
 
-    const p = document.createElement("p");
-    p.className = "card__desc";
-    p.textContent = (c.desc ?? "点击复制按钮即可复制");
+    const lab = document.createElement("div");
+    lab.className = "label";
+    lab.textContent = label;
 
-    left.appendChild(h);
-    left.appendChild(p);
+    const val = document.createElement("div");
+    val.className = "value";
+    val.textContent = codeVal || "—";
+
+    left.appendChild(lab);
+    left.appendChild(val);
 
     const btn = document.createElement("button");
     btn.className = "btn";
     btn.type = "button";
     btn.textContent = "复制";
+    btn.disabled = !codeVal;
+
     btn.addEventListener("click", async () => {
-      const ok = await copyText(c.value || "");
-      toast(ok ? "✅ 已复制" : "❌ 复制失败（浏览器限制）");
+      try{
+        await navigator.clipboard.writeText(codeVal);
+        showToast("已复制");
+      }catch(e){
+        // 兼容部分 WebView/旧浏览器
+        try{
+          const ta = document.createElement("textarea");
+          ta.value = codeVal;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          showToast("已复制");
+        }catch(_){
+          showToast("复制失败");
+        }
+      }
     });
 
-    top.appendChild(left);
-    top.appendChild(btn);
+    row.appendChild(left);
+    row.appendChild(btn);
+    list.appendChild(row);
+  }
 
-    const ta = document.createElement("textarea");
-    ta.className = "codebox";
-    ta.readOnly = true;
-    ta.spellcheck = false;
-    ta.value = c.value || "";
-
-    card.appendChild(top);
-    card.appendChild(ta);
-    codesGrid.appendChild(card);
-  });
-
-  // promo
-  promoBox.textContent = data.promo || "";
-}
-
-async function load(){
-  // 给 GitHub Pages 加一个 cache bust，防止浏览器缓存旧 data.json
-  const bust = `t=${Date.now()}`;
-  const url = DATA_URL.includes("?") ? `${DATA_URL}&${bust}` : `${DATA_URL}?${bust}`;
-
-  try{
-    const resp = await fetch(url, { cache: "no-store" });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const json = await resp.json();
-    const data = normalizeData(json);
-    render(data);
-  }catch(err){
-    console.warn("Load data.json failed, using fallback.", err);
-    render(FALLBACK);
-    toast("⚠️ 使用默认内容（data.json 未读取到）");
+  // promo：无文案则完全隐藏
+  const promo = safeText(data.promo).trim();
+  if (promo){
+    promoText.textContent = promo;
+    promoSection.hidden = false;
+  }else{
+    promoText.textContent = "";
+    promoSection.hidden = true;
   }
 }
 
-document.addEventListener("DOMContentLoaded", load);
+async function loadOnce(){
+  // cache bust，保证 GitHub Pages/CDN 不返回旧缓存
+  const url = `${DATA_URL}?t=${Date.now()}`;
+
+  const r = await fetch(url, { cache: "no-store" });
+  if(!r.ok){
+    throw new Error(`HTTP ${r.status}`);
+  }
+  const obj = await r.json();
+  return normalizeData(obj);
+}
+
+async function boot(){
+  try{
+    const data = await loadOnce();
+    render(data);
+  }catch(e){
+    // 加载失败时：也别把“失败文案”钉在屏幕上（按你的需求）
+    render({ codes: ["","","","",""], promo: "" });
+  }
+}
+
+boot();
+
+if (AUTO_REFRESH_MS > 0){
+  setInterval(boot, AUTO_REFRESH_MS);
+}
