@@ -33,7 +33,16 @@ function safeText(v){
 }
 
 function normalizeData(obj){
-  const out = { codes: ["","","","",""], promo: "" };
+  const out = {
+    codes: ["","","","",""],
+    promo: "",
+    special: {
+      enabled: false,
+      start: null,
+      end: null,
+      codes: []
+    }
+  };
 
   if (obj && typeof obj === "object"){
     if (Array.isArray(obj.codes)){
@@ -41,12 +50,85 @@ function normalizeData(obj){
       while (c.length < 5) c.push("");
       out.codes = c;
     }
+
     if (typeof obj.promo === "string"){
       out.promo = obj.promo;
+    }
+
+    if (obj.special && typeof obj.special === "object"){
+      out.special.enabled = !!obj.special.enabled;
+      out.special.start = obj.special.start || null;
+      out.special.end = obj.special.end || null;
+      if (Array.isArray(obj.special.codes)){
+        out.special.codes = obj.special.codes.map(safeText);
+      }
     }
   }
 
   return out;
+}
+function isSpecialActive(special){
+  if (!special.enabled) return false;
+  if (!special.start || !special.end) return false;
+
+  const now = new Date();
+  const start = new Date(special.start);
+  const end = new Date(special.end);
+
+  return now >= start && now <= end;
+}
+
+function renderSpecial(data){
+  const stage = document.querySelector(".stage");
+  let wrap = document.getElementById("specialWrap");
+
+  if (!wrap){
+    wrap = document.createElement("div");
+    wrap.id = "specialWrap";
+    wrap.className = "specialWrap hidden";
+    stage.appendChild(wrap);
+  }
+
+  const active = isSpecialActive(data.special);
+
+  if (!active){
+    wrap.classList.add("hidden");
+    stage.classList.remove("special-active");
+    return;
+  }
+
+  stage.classList.add("special-active");
+  wrap.classList.remove("hidden");
+
+  wrap.innerHTML = `<div class="specialTitle">🎁 特别奖励代码</div>`;
+
+  data.special.codes.forEach(code => {
+    if (!code) return;
+
+    const row = document.createElement("div");
+    row.className = "specialRow";
+
+    const val = document.createElement("div");
+    val.className = "value";
+    val.textContent = code;
+
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.textContent = "Copiar";
+
+    btn.addEventListener("click", async ()=>{
+      try{
+        await navigator.clipboard.writeText(code);
+        showToast("¡Copiado!");
+      }catch{
+        showToast("No se pudo copiar");
+      }
+    });
+
+    row.appendChild(val);
+    row.appendChild(btn);
+    wrap.appendChild(row);
+  });
 }
 
 function render(data){
@@ -54,6 +136,7 @@ function render(data){
   const promoSection = qs("promoSection");
   const promoText = qs("promoText");
   if(!list) return;
+renderSpecial(data);
 
   // codes
   list.innerHTML = "";
@@ -151,4 +234,6 @@ boot();
 if (AUTO_REFRESH_MS > 0){
   setInterval(boot, AUTO_REFRESH_MS);
 }
+
+const AUTO_REFRESH_MS = 5000; // 建议 5 秒刷新一次
 
