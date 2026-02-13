@@ -314,8 +314,8 @@ body{
   align-items: center;
   margin-bottom: 6px;
 }
-
-/* 当特别奖励出现时，主卡片向下移动 */
 .stage.special-active .codesWrap{
-  transform: translate(-50%, -10%);
+  transform: translate(-50%, -50%) translateY(120px);
 }
+
+
