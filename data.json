@@ -1,10 +1,4 @@
 {
-  "codes": [
-    "CODE1sdfg",
-    "CODE2dfg",
-    "CODE3hsdfg",
-    "CODE4fhsdfgs",
-    "CODE5hdfgsd"
-  ],
-  "promo": "活动说明第一行\n活动说明第二行\n支持换行"
+  "codes": ["SDFsd1231","SDFsd1232","SDFsd1233","SDFsd1234","SDFsd1235"],
+  "promo": "这里是活动说明..."
 }
