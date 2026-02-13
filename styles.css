@@ -1,26 +1,49 @@
 :root{
   --bg-url: url("bg.jpg"); /* 背景图文件名：bg.jpg（同目录） */
 
+  /* ===== 文字基础 ===== */
   --fg: #ffffff;
   --muted: rgba(255,255,255,0.78);
-
-  /* 按钮轻底色（不虚化、不加边框） */
-  --btn-bg: rgba(255,255,255,0.18);
-  --btn-bg-hover: rgba(255,255,255,0.26);
 
   /* 只给文字可读性（不是背景遮罩） */
   --shadow: 0 2px 10px rgba(0,0,0,0.55);
 
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC",
           "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif;
+
+  /* ===== 方案1：磨砂玻璃卡片参数（可调）===== */
+  --glass-bg: rgba(0,0,0,0.34);
+  --glass-bg-strong: rgba(0,0,0,0.42);
+  --glass-border: rgba(255,255,255,0.12);
+  --glass-shadow: 0 12px 40px rgba(0,0,0,0.35);
+
+  /* ===== 方案2：豪华金色文字/按钮 ===== */
+  --gold-1: #fff2a6;
+  --gold-2: #ffd34f;
+  --gold-3: #ffb000;
+
+  /* 兑换码发光强度（可调） */
+  --gold-glow: 0 0 12px rgba(255, 210, 60, 0.35), 0 8px 22px rgba(0,0,0,0.35);
+
+  /* 复制按钮（豪华胶囊） */
+  --btn-grad: linear-gradient(90deg, #ffd34f, #ffb000);
+  --btn-grad-hover: linear-gradient(90deg, #ffe07a, #ffbf2e);
+  --btn-shadow: 0 10px 22px rgba(0,0,0,0.25), 0 0 16px rgba(255, 170, 20, 0.45);
+
+  /* 旧参数保留（兼容你之前的风格，作为降级/备用） */
+  --btn-bg: rgba(255,255,255,0.18);
+  --btn-bg-hover: rgba(255,255,255,0.26);
 }
 
 *{ box-sizing: border-box; }
 html,body{ height:100%; margin:0; }
+
 body{
   font-family: var(--font);
   color: var(--fg);
   overflow: hidden; /* ✅ 只做手机单屏 16:9，不滚动 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ✅ 背景原图：不加虚化、不加遮罩 */
@@ -64,60 +87,128 @@ body{
   color: var(--muted);
 }
 
-/* ✅ 兑换码列表：强制落在画面中间（你红框位置） */
+/* ✅ 兑换码区域：仍在中间，但升级为“磨砂玻璃卡片” */
 .codesWrap{
   position: absolute;
   left: 50%;
-  top: 52%;
+  top: 52%; /* 你要微调位置就改这里：50~56% 都常用 */
   transform: translate(-50%, -50%);
-  width: min(420px, 78vw);
+  width: min(440px, 82vw);
+  padding: 14px 14px;
+  border-radius: 18px;
+
+  /* 方案1：玻璃层 */
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+
+  /* 玻璃虚化：部分安卓机可能不支持，会自动变成纯半透明 */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-/* 列表：无边框、无卡片 */
+/* 给卡片加一点“金色内光”，但不俗 */
+.codesWrap::before{
+  content:"";
+  position:absolute;
+  inset: 0;
+  border-radius: 18px;
+  pointer-events:none;
+  background:
+    radial-gradient(120% 120% at 20% 10%, rgba(255, 210, 60, 0.18), transparent 55%),
+    radial-gradient(120% 120% at 80% 0%, rgba(255, 255, 255, 0.10), transparent 50%),
+    radial-gradient(120% 120% at 50% 120%, rgba(0,0,0,0.25), transparent 60%);
+}
+
+/* 列表：无边框、无卡片（现在卡片由 codesWrap 提供） */
 .list{
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  z-index: 1; /* 压过 codesWrap::before */
 }
 
 /* 单行：左文案 + 右按钮 */
 .row{
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
+  padding: 6px 6px;
+  border-radius: 14px;
 }
+
+/* 行 hover 增加一点“高级感” */
+.row:active{
+  background: rgba(255,255,255,0.06);
+}
+
 .left{
   min-width: 0;
 }
 .label{
-  font-size: 12px;
-  color: var(--muted);
+  font-size: clamp(12px, 2.6vw, 13px);
+  color: rgba(255,255,255,0.72);
   margin-bottom: 4px;
-}
-.value{
-  font-size: 14px;
-  font-weight: 800;
   letter-spacing: 0.2px;
-  word-break: break-all;
 }
 
-/* 复制按钮：无边框、轻底色 */
+/* ✅ 兑换码：方案2（豪华金色渐变 + 微描边 + 发光） */
+.value{
+  font-size: clamp(18px, 4.2vw, 24px); /* 自适应：小屏不爆、大屏不小气 */
+  font-weight: 950;
+  letter-spacing: 0.4px;
+  word-break: break-all;
+  line-height: 1.1;
+
+  /* 金色渐变文字 */
+  background: linear-gradient(90deg, var(--gold-1), var(--gold-2), var(--gold-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  /* 轻描边：提升在亮背景上的清晰度 */
+  -webkit-text-stroke: 1px rgba(0,0,0,0.45);
+
+  /* 发光：让兑换码“浮起来” */
+  text-shadow: var(--gold-glow);
+}
+
+/* 复制按钮：升级为豪华发光胶囊 */
 .btn{
   border: none;
-  background: var(--btn-bg);
-  color: var(--fg);
-  padding: 8px 12px;
+  background: var(--btn-grad);
+  color: #2b1a00; /* 深色字更像“金币按钮” */
+  padding: 9px 14px;
   border-radius: 999px;
   font-size: 12px;
+  font-weight: 900;
   cursor: pointer;
   text-shadow: none;
+  box-shadow: var(--btn-shadow);
+  transition: transform .12s ease, filter .12s ease, background .12s ease;
+  -webkit-tap-highlight-color: transparent;
 }
-.btn:active{ transform: translateY(1px); }
-.btn:hover{ background: var(--btn-bg-hover); }
-.btn[disabled]{ opacity: 0.45; cursor: not-allowed; }
 
-/* ✅ 活动说明：居中偏下；无文案时 hidden=真，就完全不显示 */
+.btn:hover{
+  background: var(--btn-grad-hover);
+  filter: brightness(1.02);
+}
+.btn:active{
+  transform: translateY(1px) scale(0.98);
+  filter: brightness(0.98);
+}
+
+.btn[disabled]{
+  opacity: 0.50;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.75);
+}
+
+/* ✅ 活动说明：也给一个更轻的玻璃层，保持一致 */
 .promo{
   position: absolute;
   left: 50%;
@@ -125,16 +216,29 @@ body{
   transform: translateX(-50%);
   width: min(520px, 92vw);
   text-align: center;
+
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: var(--glass-bg-strong);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.22);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
+
 .promoTitle{
   font-size: 12px;
-  color: var(--muted);
+  color: rgba(255,255,255,0.72);
   margin-bottom: 6px;
+  letter-spacing: 0.2px;
 }
+
 .promoText{
   font-size: 13px;
   line-height: 1.55;
   white-space: pre-wrap;
+  color: rgba(255,255,255,0.92);
 }
 
 /* Toast */
@@ -151,8 +255,16 @@ body{
   opacity: 0;
   pointer-events: none;
   transition: opacity .18s ease, transform .18s ease;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.25);
 }
 .toast.show{
   opacity: 1;
   transform: translateX(-50%) translateY(-4px);
+}
+
+/* ===== 可选：极端小屏再收紧一点间距（不破布局） ===== */
+@media (max-width: 360px){
+  .codesWrap{ width: min(420px, 88vw); padding: 12px 12px; }
+  .row{ gap: 10px; }
+  .btn{ padding: 8px 12px; }
 }
