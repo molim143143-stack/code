@@ -7,5 +7,16 @@
     "CODE55"
   ],
   "promo": "Código recompensa",
-  "special": []
+  "special": [
+    {
+      "id": "1bbd2c58-b22f-4cf5-ad9c-ba4cdc396075",
+      "enabled": true,
+      "start": "2026-02-13T20:38:00-06:00",
+      "end": "2026-02-13T20:52:00-06:00",
+      "codes": [
+        "CODE1111111",
+        "CODE22111111"
+      ]
+    }
+  ]
 }
