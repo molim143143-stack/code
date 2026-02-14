@@ -1,4 +1,11 @@
 {
-  "codes": ["SDFsd1231","SDFsd1232","SDFsd1233","SDFsd1234","SDFsd1235"],
-  "promo": "这里是活动说明..."
+  "codes": [
+    "CODE11",
+    "CODE22",
+    "CODE33",
+    "CODE44",
+    "CODE55"
+  ],
+  "promo": "Código recompensa",
+  "special": []
 }
