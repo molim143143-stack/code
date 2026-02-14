@@ -105,7 +105,7 @@ function renderSpecial(data){
   stage.classList.add("special-active");
   wrap.classList.remove("hidden");
 
-  wrap.innerHTML = `<div class="specialTitle">🎁 特别奖励代码</div>`;
+  wrap.innerHTML = `<div class="specialTitle">🎁 Promoción por tiempo limitado</div>`;
 
   active.codes.forEach(code => {
     if (!code) return;
@@ -240,6 +240,7 @@ boot();
 if (AUTO_REFRESH_MS > 0){
   setInterval(boot, AUTO_REFRESH_MS);
 }
+
 
 
 
