@@ -1,22 +1,11 @@
 {
   "codes": [
-    "CODE11",
-    "CODE22",
-    "CODE33",
-    "CODE44",
-    "CODE55"
+    "CODE1XX1",
+    "CODE2XX2",
+    "CODE3XX3",
+    "CODE4XX4",
+    "CODE5XX5"
   ],
-  "promo": "Código recompensa",
-  "special": [
-    {
-      "id": "1bbd2c58-b22f-4cf5-ad9c-ba4cdc396075",
-      "enabled": true,
-      "start": "2026-02-13T20:38:00-06:00",
-      "end": "2026-02-13T20:52:00-06:00",
-      "codes": [
-        "CODE1111111",
-        "CODE22111111"
-      ]
-    }
-  ]
+  "promo": "",
+  "special": []
 }
