@@ -1,22 +1,11 @@
 {
   "codes": [
-    "CODE1XX1",
-    "CODE2XX2",
-    "CODE3XX3",
-    "CODE4XX4",
-    "CODE5XX5"
+    "AJWqSseuifav",
+    "Aizx7kkDMr2S",
+    "ARs8Jcm5ikAP",
+    "AVvT9XqG4Gsu",
+    "ABGnKMW9Hv3L"
   ],
   "promo": "",
-  "special": [
-    {
-      "id": "54689994-50f1-4b31-a3fc-e5603836ac67",
-      "enabled": true,
-      "start": "2026-02-14T00:47:00-06:00",
-      "end": "2026-02-14T00:57:00-06:00",
-      "codes": [
-        "CODE1XX11",
-        "CODE2XX22"
-      ]
-    }
-  ]
+  "special": []
 }
