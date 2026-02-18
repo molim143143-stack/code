@@ -7,5 +7,19 @@
     "ABGnKMW9Hv3L"
   ],
   "promo": "",
-  "special": []
+  "special": [
+    {
+      "id": "77525c21-d9b4-4819-9243-7b50ea822761",
+      "enabled": true,
+      "start": "2026-02-19T01:00:00-06:00",
+      "end": "2026-02-19T23:59:00-06:00",
+      "codes": [
+        "AJWqSseuifav",
+        "Aizx7kkDMr2S",
+        "ARs8Jcm5ikAP",
+        "AVvT9XqG4Gsu",
+        "ABGnKMW9Hv3L"
+      ]
+    }
+  ]
 }
