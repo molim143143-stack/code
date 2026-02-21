@@ -1,20 +1,20 @@
 {
   "codes": [
-    "BDMx55rX9KJa",
-    "AfPKFvkGCNas",
-    "ACD9sxRwYWY8",
-    "ASjuVzuLBhiL",
-    "AmnpcbWSwFJS"
+    "APsVMcUg9ysa",
+    "AMGRnUcWkVAz",
+    " AxQjcVtw6paa",
+    "  AsNenJrpth2J",
+    " A7pCHWiAUSaP"
   ],
-  "promo": ,
+  "promo": "APjbtjAqr6Aq\nA5RrvRPSHM2K\nAwp2XKcEJ92J\nA4YvV9JEtD2L\nA52JDbgv5SJA",
   "special": [
     {
       "id": "55f3a429-354b-4342-b806-10a334e633f9",
       "enabled": true,
-      "start": "2036-02-20T01:00:00-06:00",
-      "end": "2036-02-20T23:00:00-06:00",
+      "start": "2026-02-20T01:00:00-06:00",
+      "end": "2026-02-20T23:00:00-06:00",
       "codes": [
-       
+        "2026-02-20 01:00"
       ]
     }
   ]
